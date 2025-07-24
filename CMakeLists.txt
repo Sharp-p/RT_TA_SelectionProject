@@ -12,7 +12,8 @@ set(CMAKE_CXX_STANDARD 20)
 
 # which file to compile
 add_executable(SelectionProject main.cpp
-        shell.hpp)
+        shell.hpp
+        shell.cpp)
 
 # for which target needs to create extra output files
 pico_add_extra_outputs(SelectionProject)

@@ -20,7 +20,9 @@ int main() {
         line[LENGTH + 1] = '\0';
 
         char *token = strtok(line, " ");
-        while (token != NULL) {}
+        while (token != nullptr) {
+
+        }
 
         switch ()
     }
