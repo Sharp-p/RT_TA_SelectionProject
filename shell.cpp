@@ -9,40 +9,32 @@
 #include "pico/stdlib.h"
 using namespace shell;
 
-Command::Command(char* command) {
-    this->command_ = strtok(command, " ");
-    this->argument_ = strtok(nullptr, "\0");
-
-    switch (this->command_) {
-        case CommandType::LED:
-            this->type_ = CommandType::LED;
-            break;
-        case CommandType::SET:
-            this->type_ = CommandType::SET;
-            break;
-        case CommandType::ECHO:
-            this->type_ = CommandType::ECHO;
-            break;
-        case CommandType::SLEEP:
-            this->type_ = CommandType::SLEEP;
-            break;
-        case CommandType::SPEAKER:
-            this->type_ = CommandType::SPEAKER;
-            break;
-        default:
-            this->type_ = CommandType::UNKNOWN;
-    }
+Command::Command(std::string& command, Shell& shell): shell_(shell) {
+    const size_t endToken = command.find(' ');
+    this->command_ = command.substr(0, endToken);
+    this->argument_ = command.substr(endToken + 1);
+    this->type_ = fromString(this->command_);
 }
+
+CommandType Command::fromString(const std::string& command) {
+    if (command == "led") return CommandType::LED;
+    if (command == "set") return CommandType::SET;
+    if (command == "echo") return CommandType::ECHO;
+    if (command == "sleep") return CommandType::SLEEP;
+    if (command ==  "speaker") return CommandType::SPEAKER;
+    return CommandType::UNKNOWN;
+}
+
 
 CommandType Command::getType() const {
     return this->type_;
 }
 
-char* Command::getCommand() const {
+std::string Command::getCommand() const {
     return this->command_;
 }
 
-char* Command::getArgument() const {
+std::string Command::getArgument() const {
     return this->argument_;
 }
 
@@ -72,48 +64,58 @@ void Command::execute() const {
     }
 }
 
-void led(char* arguments) {
-    char* action = strtok(arguments, " ");
-    char* arg = strtok(nullptr, "\0");
+void led(const std::string& arguments) {
+    const size_t endToken = arguments.find(' ');
+    std::string action = arguments.substr(0, endToken);
+    std::string arg = arguments.substr(endToken + 1);
 
     // checks the action
-    if (strcmp(action, "on") == 0) {
+    if (action == "on") {
         // checks the argument
-        if (strcmp(arg, "red") == 0) {
+        if (arg == "red") {
             gpio_init(LED_RED);
             gpio_set_dir(LED_RED, GPIO_OUT);
             gpio_put(LED_RED, true);
         }
-        else if (strcmp(arg, "blue") == 0) {
+        else if (arg == "blue") {
             gpio_init(LED_BLUE);
             gpio_set_dir(LED_BLUE, GPIO_OUT);
             gpio_put(LED_BLUE, true);
         }
-        else if (strcmp(arg, "green") == 0) {
+        else if (arg == "green") {
             gpio_init(LED_GREEN);
             gpio_set_dir(LED_GREEN, GPIO_OUT);
             gpio_put(LED_GREEN, true);
         }
         else {
-            printf("[ERROR] led color not valid: %s", arg);
+            printf("[ERROR] led color not valid: %s", arg.c_str());
         }
     }
-    else if (strcmp(action, "off") == 0) {
-
-        if (strcmp(arg, "red") == 0) {
+    else if (action == "off") {
+        // checks the argument
+        if (arg == "red") {
             gpio_put(LED_RED, false);
             gpio_deinit(LED_RED);
         }
-        else if (strcmp(arg, "blue") == 0) {
+        else if (arg == "blue") {
             gpio_put(LED_BLUE, false);
             gpio_deinit(LED_BLUE);
         }
-        else if (strcmp(arg, "green") == 0) {
+        else if (arg == "green") {
             gpio_put(LED_GREEN, false);
             gpio_deinit(LED_GREEN);
         }
+        else {
+            printf("[ERROR] led color not valid: %s", arg.c_str());
+        }
     }
     else {
-        printf("[ERROR] Invalid action: %s", action);
+        printf("[ERROR] Invalid action: %s", action.c_str());
     }
+}
+
+void set(const std::string& arguments) {
+    const size_t endToken = arguments.find(' ');
+    std::string name = arguments.substr(0, endToken);
+    std::string value = arguments.substr(endToken + 1);
 }

@@ -1,30 +1,31 @@
 #include <iostream>
 #include "pico/stdlib.h"
 #include "pico/stdio.h"
-#include "cstring"
+#include "shell.hpp"
 using namespace std;
+using namespace shell;
 
 #define LENGTH 80
 
 int main() {
     stdio_usb_init();
 
+    Shell shell;
 
-    char line[LENGTH+1];
+    string line;
     int character;
+
 
     while (true) {
         printf("> ");
+        // reads a line from the prompt
         for (int i = 0; (i < LENGTH) && ((character = getchar()) != '\n') &&
-            (character != EOF); i++) line[i] = (character);
-        line[LENGTH + 1] = '\0';
+            (character != EOF); i++) line.append(1, character);
 
-        char *token = strtok(line, " ");
-        while (token != nullptr) {
+        // creates a command object
 
-        }
+        // executes the command
 
-        switch ()
     }
 
     return 0;
