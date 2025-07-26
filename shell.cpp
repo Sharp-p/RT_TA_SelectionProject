@@ -9,6 +9,14 @@
 #include "pico/stdlib.h"
 using namespace shell;
 
+std::map<std::string, std::string> Shell::getVariables() {
+    return this->variables_;
+}
+
+void Shell::setVariable(const std::string& key, const std::string& value) {
+    this->variables_[key] = value;
+}
+
 Command::Command(std::string& command, Shell& shell): shell_(shell) {
     const size_t endToken = command.find(' ');
     this->command_ = command.substr(0, endToken);
@@ -48,7 +56,7 @@ void Command::execute() const {
             led(this->argument_);
             break;
         case CommandType::SET:
-            set(this->argument_);
+            set(this->argument_, this->shell_);
             break;
         case CommandType::ECHO:
             echo(this->argument_);
@@ -66,8 +74,8 @@ void Command::execute() const {
 
 void led(const std::string& arguments) {
     const size_t endToken = arguments.find(' ');
-    std::string action = arguments.substr(0, endToken);
-    std::string arg = arguments.substr(endToken + 1);
+    const std::string action = arguments.substr(0, endToken);
+    const std::string arg = arguments.substr(endToken + 1);
 
     // checks the action
     if (action == "on") {
@@ -114,8 +122,10 @@ void led(const std::string& arguments) {
     }
 }
 
-void set(const std::string& arguments) {
+void set(const std::string& arguments, Shell& shell) {
     const size_t endToken = arguments.find(' ');
     std::string name = arguments.substr(0, endToken);
     std::string value = arguments.substr(endToken + 1);
+    // overwrites a variable with the same name
+    shell.setVariable(name, value);
 }

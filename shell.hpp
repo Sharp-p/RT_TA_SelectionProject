@@ -27,14 +27,14 @@ namespace shell {
 
     class Shell {
         private:
-            std::map<std::string, std::string> variables;
+            std::map<std::string, std::string> variables_;
         public:
             // could be returned be reference (&) for performance reasons,
             // at the cost of breaking the encapsulation, but for this exercise
             // is not necessary, so we will respect the encapsulation
             std::map<std::string, std::string> getVariables();
             // if a variable is already in the map it will be overwritten
-            void setVariable(std::string key, std::string value);
+            void setVariable(const std::string& key, const std::string& value);
     };
 
     class Command{
@@ -66,7 +66,7 @@ namespace shell {
 
     // actual operations
     void led(const std::string& arguments);
-    void set(const std::string& arguments);
+    void set(const std::string& arguments, Shell& shell);
     void echo(const std::string& arguments);
     void sleep(const std::string& arguments);
     void speaker(const std::string& arguments);
