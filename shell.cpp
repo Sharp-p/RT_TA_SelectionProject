@@ -157,5 +157,11 @@ void set(const std::string& arguments, Shell& shell) {
 }
 
 void echo(const std::string& arguments) {
-    printf("%s", arguments.c_str());
+    if (arguments.empty()) return;
+    std::stringstream stream(arguments);
+    std::string value;
+
+    std::getline(stream, value, ' ');
+
+    printf("%s", value.c_str());
 }
