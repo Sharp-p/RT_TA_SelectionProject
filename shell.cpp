@@ -123,9 +123,17 @@ void led(const std::string& arguments) {
 }
 
 void set(const std::string& arguments, Shell& shell) {
-    const size_t endToken = arguments.find(' ');
-    std::string name = arguments.substr(0, endToken);
-    std::string value = arguments.substr(endToken + 1);
+    size_t endToken = arguments.find(' ');
+    size_t startToken = 0;
+    const std::string name = arguments.substr(startToken, endToken);
+    startToken = endToken;
+    // so it stops at the first word, the rest are ignored
+    endToken = arguments.find(' ', endToken);
+    const std::string value = arguments.substr(startToken, endToken);
     // overwrites a variable with the same name
     shell.setVariable(name, value);
+}
+
+void echo(const std::string& arguments) {
+
 }
