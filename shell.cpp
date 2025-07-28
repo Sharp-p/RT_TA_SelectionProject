@@ -7,6 +7,9 @@
 #include <cstdlib>
 #include <cstring>
 #include "pico/stdlib.h"
+#include <sstream>
+#include <vector>
+
 using namespace shell;
 
 std::map<std::string, std::string> Shell::getVariables() {
@@ -18,6 +21,7 @@ void Shell::setVariable(const std::string& key, const std::string& value) {
 }
 
 Command::Command(std::string& command, Shell& shell): shell_(shell) {
+    // TODO: need to add some checks on the string
     const size_t endToken = command.find(' ');
     this->command_ = command.substr(0, endToken);
     this->argument_ = command.substr(endToken + 1);
@@ -123,17 +127,35 @@ void led(const std::string& arguments) {
 }
 
 void set(const std::string& arguments, Shell& shell) {
-    size_t endToken = arguments.find(' ');
-    size_t startToken = 0;
-    const std::string name = arguments.substr(startToken, endToken);
-    startToken = endToken;
-    // so it stops at the first word, the rest are ignored
-    endToken = arguments.find(' ', endToken);
-    const std::string value = arguments.substr(startToken, endToken);
+    if (arguments.empty()) return;
+
+    std::stringstream stream(arguments);
+    std::string buffer;
+    std::vector <std::string> tokens;
+
+    while (std::getline(stream, buffer, ' ')) {
+        tokens.push_back(buffer);
+    }
+
+    std::string name;
+    std::string value;
+
+    if (tokens.size() >= 2) {
+        name = tokens[0];
+        value = tokens[1];
+    }
+    else if (tokens.size() == 1) {
+        name = tokens[0];
+        value = "";
+    }
+    else {
+        return;
+    }
+
     // overwrites a variable with the same name
     shell.setVariable(name, value);
 }
 
 void echo(const std::string& arguments) {
-
+    printf("%s", arguments.c_str());
 }
