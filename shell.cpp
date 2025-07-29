@@ -40,7 +40,7 @@ Command::Command(std::string& command, Shell& shell): shell_(shell) {
         // finds the next variable
         startVar = command.find('%', endVar + 1);
     }
-    
+
     const size_t endToken = command.find(' ');
     this->command_ = command.substr(0, endToken);
     this->argument_ = command.substr(endToken + 1);
@@ -194,8 +194,15 @@ void sleep(const std::string& arguments) {
         tokens.push_back(buffer);
     }
 
+    // checks if the second argument is numerical
+    std::string::const_iterator it = tokens[1].begin();
+    while (it != tokens[1].end() && std::isdigit(*it)) ++it;
+    if (it != tokens[1].end()) {
+        printf("[ERROR] Second argument is not numeric: %s\n", tokens[1].c_str());
+        return;
+    }
+
     if (tokens.size() >= 2) {
-        // TODO: check on second argument token[1]
         if (tokens[0] == "ms" || tokens[0] == "millis") {
             sleep_ms(std::stoi(tokens[1]));
         }
