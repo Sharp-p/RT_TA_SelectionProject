@@ -28,6 +28,8 @@ namespace shell {
     class Shell {
         private:
             std::map<std::string, std::string> variables_;
+            // red green blue
+            bool leds[3] = {false, false, false};
         public:
             // could be returned by reference (&) for performance reasons,
             // at the cost of breaking the encapsulation, but for this exercise
@@ -35,6 +37,9 @@ namespace shell {
             std::map<std::string, std::string> getVariables();
             // if a variable is already in the map it will be overwritten
             void setVariable(const std::string& key, const std::string& value);
+            // led is in [0,2]
+            void setLeds(int led, bool value);
+            void printLeds();
     };
 
     class Command{
@@ -65,7 +70,7 @@ namespace shell {
     };
 
     // actual operations
-    void led(const std::string& arguments);
+    void led(const std::string& arguments, Shell& shell);
     void set(const std::string& arguments, Shell& shell);
     void echo(const std::string& arguments);
     void sleep(const std::string& arguments);

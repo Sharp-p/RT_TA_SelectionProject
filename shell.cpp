@@ -20,6 +20,19 @@ void Shell::setVariable(const std::string& key, const std::string& value) {
     this->variables_[key] = value;
 }
 
+void Shell::setLeds(int led, bool value) {
+    if (led < 0 || led > 2) {
+        printf("[ERROR] Invalid led index: %d\n", led);
+        return;
+    }
+
+    this->leds[led] = value;
+}
+
+void Shell::printLeds() {
+    printf("red=%d, green=%d, blue=%d\n", this->leds[0], this->leds[1], this->leds[2]);
+}
+
 Command::Command(std::string& command, Shell& shell): shell_(shell) {
     // TODO: need to add some checks on the string
 
@@ -76,7 +89,7 @@ bool Command::isValid() const {
 void Command::execute() const {
     switch (this->type_) {
         case CommandType::LED:
-            led(this->argument_);
+            led(this->argument_, this->shell_);
             break;
         case CommandType::SET:
             set(this->argument_, this->shell_);
@@ -95,7 +108,7 @@ void Command::execute() const {
     }
 }
 
-void led(const std::string& arguments) {
+void led(const std::string& arguments, Shell& shell) {
     const size_t endToken = arguments.find(' ');
     const std::string action = arguments.substr(0, endToken);
     const std::string arg = arguments.substr(endToken + 1);
@@ -104,19 +117,40 @@ void led(const std::string& arguments) {
     if (action == "on") {
         // checks the argument
         if (arg == "red") {
+            printf("WAS: ");
+            shell.printLeds();
+
             gpio_init(LED_RED);
             gpio_set_dir(LED_RED, GPIO_OUT);
             gpio_put(LED_RED, true);
+            shell.setLeds(0, true);
+
+            printf("NOW: ");
+            shell.printLeds();
         }
         else if (arg == "blue") {
+            printf("WAS: ");
+            shell.printLeds();
+
             gpio_init(LED_BLUE);
             gpio_set_dir(LED_BLUE, GPIO_OUT);
             gpio_put(LED_BLUE, true);
+            shell.setLeds(2, true);
+
+            printf("NOW: ");
+            shell.printLeds();
         }
         else if (arg == "green") {
+            printf("WAS: ");
+            shell.printLeds();
+
             gpio_init(LED_GREEN);
             gpio_set_dir(LED_GREEN, GPIO_OUT);
             gpio_put(LED_GREEN, true);
+            shell.setLeds(1, true);
+
+            printf("NOW: ");
+            shell.printLeds();
         }
         else {
             printf("[ERROR] Led color not valid: %s\n", arg.c_str());
@@ -125,16 +159,37 @@ void led(const std::string& arguments) {
     else if (action == "off") {
         // checks the argument
         if (arg == "red") {
+            printf("WAS: ");
+            shell.printLeds();
+
             gpio_put(LED_RED, false);
+            shell.setLeds(0, false);
             gpio_deinit(LED_RED);
+
+            printf("NOW: ");
+            shell.printLeds();
         }
         else if (arg == "blue") {
+            printf("WAS: ");
+            shell.printLeds();
+
             gpio_put(LED_BLUE, false);
+            shell.setLeds(2, false);
             gpio_deinit(LED_BLUE);
+
+            printf("NOW: ");
+            shell.printLeds();
         }
         else if (arg == "green") {
+            printf("WAS: ");
+            shell.printLeds();
+
             gpio_put(LED_GREEN, false);
+            shell.setLeds(1, false);
             gpio_deinit(LED_GREEN);
+
+            printf("NOW: ");
+            shell.printLeds();
         }
         else {
             printf("[ERROR] Led color not valid: %s\n", arg.c_str());
