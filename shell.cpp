@@ -24,6 +24,7 @@ Command::Command(std::string& command, Shell& shell): shell_(shell) {
     // TODO: need to add some checks on the string
     const size_t endToken = command.find(' ');
     this->command_ = command.substr(0, endToken);
+    // TODO: substitution of the vars in the command
     this->argument_ = command.substr(endToken + 1);
     this->type_ = fromString(this->command_);
 }
@@ -144,13 +145,11 @@ void set(const std::string& arguments, Shell& shell) {
         name = tokens[0];
         value = tokens[1];
     }
-    else if (tokens.size() == 1) {
+    else {
         name = tokens[0];
         value = "";
     }
-    else {
-        return;
-    }
+
 
     // overwrites a variable with the same name
     shell.setVariable(name, value);
@@ -164,4 +163,32 @@ void echo(const std::string& arguments) {
     std::getline(stream, value, ' ');
 
     printf("%s", value.c_str());
+}
+
+void sleep(const std::string& arguments) {
+    if (arguments.empty()) return;
+
+    std::stringstream stream(arguments);
+    std::string buffer;
+    std::vector <std::string> tokens;
+
+    while (std::getline(stream, buffer, ' ')) {
+        tokens.push_back(buffer);
+    }
+
+    if (tokens.size() >= 2) {
+        // TODO: check on second argument token[1]
+        if (tokens[0] == "ms" || tokens[0] == "millis") {
+            sleep_ms(std::stoi(tokens[1]));
+        }
+        else if (tokens[0] == "s" || tokens[0] == "seconds") {
+            sleep_ms(std::stoi(tokens[1]) * 1000);
+        }
+        else {
+            printf("[ERROR] invalid unit: %s\nUse ms/millis or s/seconds.", tokens[0].c_str())
+        }
+    }
+    else {
+        printf("[ERROR] not valid number of arguments: %d", tokens.size());
+    }
 }
