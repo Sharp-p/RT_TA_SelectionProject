@@ -22,9 +22,26 @@ void Shell::setVariable(const std::string& key, const std::string& value) {
 
 Command::Command(std::string& command, Shell& shell): shell_(shell) {
     // TODO: need to add some checks on the string
+    // TODO: substitution of the vars in the command
+
+    // check if there are variables used in the command (%)
+    const size_t startVar = command.find('%');
+    if (startVar != std::string::npos) {
+        // finds the end of the variable
+        size_t endVar = command.find(' ', startVar + 1);
+        if (endVar == std::string::npos) endVar = command.size();
+        // tries to get the value of the variable
+        try {
+            std::string value= this->shell_.getVariables().at(command.substr(startVar + 1,
+                endVar - startVar - 1));
+            command.replace(startVar, endVar, value);
+        } catch (std::out_of_range& e) {
+            printf("%s", e.what());
+        }
+    }
+
     const size_t endToken = command.find(' ');
     this->command_ = command.substr(0, endToken);
-    // TODO: substitution of the vars in the command
     this->argument_ = command.substr(endToken + 1);
     this->type_ = fromString(this->command_);
 }

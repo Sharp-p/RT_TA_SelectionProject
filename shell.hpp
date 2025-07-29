@@ -29,7 +29,7 @@ namespace shell {
         private:
             std::map<std::string, std::string> variables_;
         public:
-            // could be returned be reference (&) for performance reasons,
+            // could be returned by reference (&) for performance reasons,
             // at the cost of breaking the encapsulation, but for this exercise
             // is not necessary, so we will respect the encapsulation
             std::map<std::string, std::string> getVariables();
