@@ -24,8 +24,8 @@ Command::Command(std::string& command, Shell& shell): shell_(shell) {
     // TODO: need to add some checks on the string
 
     // check if there are variables used in the command (%)
-    const size_t startVar = command.find('%');
-    if (startVar != std::string::npos) {
+    size_t startVar = command.find('%');
+    while (startVar != std::string::npos) {
         // finds the end of the variable
         size_t endVar = command.find(' ', startVar + 1);
         if (endVar == std::string::npos) endVar = command.size();
@@ -37,10 +37,10 @@ Command::Command(std::string& command, Shell& shell): shell_(shell) {
         } catch (std::out_of_range& e) {
             printf("[ERROR] Variable not set:\n%s\n", e.what());
         }
+        // finds the next variable
+        startVar = command.find('%', endVar + 1);
     }
-
-    // TODO: substitution of multiple variables in the command
-
+    
     const size_t endToken = command.find(' ');
     this->command_ = command.substr(0, endToken);
     this->argument_ = command.substr(endToken + 1);
