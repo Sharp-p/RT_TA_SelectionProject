@@ -22,7 +22,6 @@ void Shell::setVariable(const std::string& key, const std::string& value) {
 
 Command::Command(std::string& command, Shell& shell): shell_(shell) {
     // TODO: need to add some checks on the string
-    // TODO: substitution of the vars in the command
 
     // check if there are variables used in the command (%)
     const size_t startVar = command.find('%');
@@ -36,9 +35,11 @@ Command::Command(std::string& command, Shell& shell): shell_(shell) {
                 endVar - startVar - 1));
             command.replace(startVar, endVar, value);
         } catch (std::out_of_range& e) {
-            printf("%s", e.what());
+            printf("[ERROR] Variable not set:\n%s\n", e.what());
         }
     }
+
+    // TODO: substitution of multiple variables in the command
 
     const size_t endToken = command.find(' ');
     this->command_ = command.substr(0, endToken);
@@ -90,7 +91,7 @@ void Command::execute() const {
             speaker(this->argument_);
             break;
         case CommandType::UNKNOWN:
-            printf("ERROR: Command not found\n");
+            printf("[ERROR] Command not found.\n");
     }
 }
 
@@ -118,7 +119,7 @@ void led(const std::string& arguments) {
             gpio_put(LED_GREEN, true);
         }
         else {
-            printf("[ERROR] led color not valid: %s", arg.c_str());
+            printf("[ERROR] Led color not valid: %s\n", arg.c_str());
         }
     }
     else if (action == "off") {
@@ -136,11 +137,11 @@ void led(const std::string& arguments) {
             gpio_deinit(LED_GREEN);
         }
         else {
-            printf("[ERROR] led color not valid: %s", arg.c_str());
+            printf("[ERROR] Led color not valid: %s\n", arg.c_str());
         }
     }
     else {
-        printf("[ERROR] Invalid action: %s", action.c_str());
+        printf("[ERROR] Invalid action: %s\n", action.c_str());
     }
 }
 
@@ -202,10 +203,10 @@ void sleep(const std::string& arguments) {
             sleep_ms(std::stoi(tokens[1]) * 1000);
         }
         else {
-            printf("[ERROR] invalid unit: %s\nUse ms/millis or s/seconds.", tokens[0].c_str())
+            printf("[ERROR] invalid unit: %s\nUse ms/millis or s/seconds.\n", tokens[0].c_str())
         }
     }
     else {
-        printf("[ERROR] not valid number of arguments: %d", tokens.size());
+        printf("[ERROR] not valid number of arguments: %d\n", tokens.size());
     }
 }
